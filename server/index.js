@@ -20,10 +20,14 @@ const PORT = process.env.PORT || 3000;
 import userRoutes from './Routes/user.js';
 import productRoutes from './Routes/product.js';
 import cartRoutes from './Routes/cart.js';
+import addressRoutes from './Routes/address.js';
+import orderRoutes from './Routes/order.js';
 app.use(express.json());
 app.use('/api', userRoutes);
 app.use('/api', productRoutes);
 app.use('/api', cartRoutes);
+app.use('/api', addressRoutes);
+app.use('/api', orderRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

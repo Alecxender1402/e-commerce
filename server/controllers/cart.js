@@ -39,39 +39,54 @@ export const removefromCart = trycatch(async (req, res) => {
 });  
 
 export const updatecart = trycatch(async (req, res) => {
-    const {action} = req.body;
-
-    if(action === 'increment') {
-        const {id} = req.body;
-        const cart = await Cart.findById(id).populate('product');
-
-        if(cart.product.stock === cart.quantity) {
-            return res.status(400).json({ message: 'Product is out of stock' });
-        }
-
-        cart.quantity += 1;
-
+    const { action } = req.query;
+  
+    if (action === "inc") {
+      const { id } = req.body;
+      const cart = await Cart.findById(id).populate("product");
+  
+      if (cart.quantity < cart.product.stock) {
+        cart.quantity++;
         await cart.save();
-
-        return res.status(200).json({ message: 'Cart updated successfully' });
+      } else {
+        return res.status(400).json({
+          message: "Out of stock",
+        });
+      }
+  
+      res.json({
+        message: "cart updated",
+      });
     }
-
-    if(action === 'decrement') {
-        const {id} = req.body;
-        const cart = await Cart.findById(id).populate('product');
-
-        if(cart.quantity > 1) {
-
-            cart.quantity -= 1;
-
-            await cart.save();
-        }
-        else{
-            res.status(400).json({ message: 'Quantity cannot be less than 1' });
-        } 
-
-        return res.status(200).json({ message: 'Cart updated successfully' });
+  
+    if (action === "dec") {
+      const { id } = req.body;
+      const cart = await Cart.findById(id).populate("product");
+  
+      if (cart.quantity > 1) {
+        cart.quantity--;
+        await cart.save();
+      } else {
+        return res.status(400).json({
+          message: "You have only one item",
+        });
+      }
+  
+      res.json({
+        message: "cart updated",
+      });
     }
+  });
+export const fetchcart = trycatch(async (req, res) => {
+    const cart = await Cart.find({ user: req.user._id }).populate('product');
+    
+    const sumofquantities = cart.reduce((acc, item) => acc + item.quantity, 0);
 
+    let subtotal = 0;
 
+    cart.forEach(item => {
+        const itemsubtotal = item.quantity * item.product.price;
+        subtotal += itemsubtotal;
+    });
+    res.status(200).json({ cart ,subtotal, sumofquantities });
 });
