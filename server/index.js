@@ -19,9 +19,11 @@ const PORT = process.env.PORT || 3000;
 
 import userRoutes from './Routes/user.js';
 import productRoutes from './Routes/product.js';
+import cartRoutes from './Routes/cart.js';
 app.use(express.json());
 app.use('/api', userRoutes);
 app.use('/api', productRoutes);
+app.use('/api', cartRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
